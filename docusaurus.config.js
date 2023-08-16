@@ -5,7 +5,11 @@ const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 const { createRedirects, redirects } = require("./redirects");
 const VersionsArchived = require('./versionsArchived.json');
+const version1 = require('./versions.json');
 // const ArchivedVersionsDropdownItems = Object.entries(VersionsArchived).splice(0,5,);
+const versionsDropdownItems = Object.entries(version1).splice(0,4,);
+// const archivedDropdownItems = Object.entries(version1).slice(-6);
+const archivedDropdownItems = Object.entries(version1).slice(4);
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -124,10 +128,52 @@ const config = {
           },
 
         //  navbar trial
-          // {
+          {
+            type:'dropdown',
+            label: 'Versions',
+            position: 'right',
+            items:[
+              // {
+              //   label: 'Facebook',
+              //   href: 'https://www.facebook.com',
+              // },
+              // {
+              //   label: 'Google',
+              //   href: 'https://www.google.com',
+              // },
+                    {
+                     label: 'Unreleased 🚧',
+                      to: '/next',
+                    },
 
 
-          // },
+              ...versionsDropdownItems.map(
+                    ([versionName, versionUrl]) => ({
+                      to: versionUrl,
+                      label: versionUrl,
+                    }),
+                  ),
+
+                   {
+                      type: 'html',
+                      value: '<hr class="dropdown-separator">',
+                    },
+
+                    {
+                        type: 'html',
+                        className: 'dropdown-archived-versions',
+                        value: '<b>Archived versions</b>',
+        
+                      },
+
+                      ...archivedDropdownItems.map(
+                        ([versionName, versionUrl]) => ({
+                          to: versionUrl,
+                          label: versionUrl,
+                        }),
+                      ),
+            ],
+          },
         
 
 

@@ -4,7 +4,12 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import versions from '@site/versions.json';
 import VersionsArchived from '@site/versionsArchived.json';
-const VersionsArchivedList = Object.entries(VersionsArchived);
+// import version1 from '@site/src/pages/versions1.json'
+
+const VersionsArchivedList = Object.entries(VersionsArchived).slice(-5);
+
+
+
 
 // importing container component 
 import Container from '@site/src/components/v1/Container';
@@ -73,15 +78,47 @@ export default function VersionsPage() {
               </tbody>   
               </table>
 
-              {/* <h3 id="archive">Archived Versions </h3>
+              <h3 id="archive">Archived Versions </h3>
             <p>
               Here you can find documentation for archived versions of BotKube.
             </p>
+
+            {/* {...VersionsArchivedList.map(
+                    ([versionName, versionUrl]) => ({
+                      to: versionUrl,
+                      label: versionUrl,
+                    }),
+                  ),               
+                } */}
+
+
+<table>
+              <tbody>
+                {VersionsArchivedList.map((
+                  [versionName,VersionUrl]) =>
+                   (
+                      <tr key={versionName}>
+                        <th>{VersionUrl}</th>
+                        <td>
+                          <Link to={`${VersionUrl}/`}>
+                            Documentation
+                          </Link>
+                        </td>
+                      </tr>
+                    )
+                )}
+              </tbody>   
+              </table>
+                
+         
+
             <table>
               <tbody>
+                {/* ...VersionsArchivedList.map(([version, versionUrl]) =>) */}
                 {Object.entries(VersionsArchived).map(
                   ([version, versionUrl]) =>
-                    version !== latestVersion && (
+                    version !== latestVersion && 
+                    (
                       <tr key={version}>
                         <th>{version}</th>
                         <td>
@@ -91,7 +128,7 @@ export default function VersionsPage() {
                     )
                 )}
               </tbody>
-            </table> */}
+            </table>
          </Container>
             </div>
         </Layout>

@@ -5,6 +5,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "alwaysStrict": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "resolveJsonModule":true,
+    "esModuleInterop":true
   }
 }
