@@ -7,9 +7,10 @@ const { createRedirects, redirects } = require("./redirects");
 const VersionsArchived = require('./versionsArchived.json');
 const version1 = require('./versions.json');
 // const ArchivedVersionsDropdownItems = Object.entries(VersionsArchived).splice(0,5,);
-const versionsDropdownItems = Object.entries(version1).splice(0,4,);
+const versionsDropdownItems = Object.entries(version1).splice(1,3,);
 // const archivedDropdownItems = Object.entries(version1).slice(-6);
 const archivedDropdownItems = Object.entries(version1).slice(4);
+const currversion = version1[0];
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -146,7 +147,13 @@ const config = {
                       to: '/next',
                     },
 
+                    { 
+                      label:(`${currversion} (stable)`),
+                      // label:`$()`currversion ,
+                      to:'/',
 
+                    },
+               
               ...versionsDropdownItems.map(
                     ([versionName, versionUrl]) => ({
                       to: versionUrl,
