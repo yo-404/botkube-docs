@@ -41,10 +41,3 @@ jobs:
       - name: Prettier check
         run: |
           npm run prettier:fix
-
-      - name: Push changes to remote
-        run: |
-          git add .
-          git commit -m "Prepare docs for ${{ inputs.version }} release"
-          git push
-          git push origin release/${{ inputs.version }}
