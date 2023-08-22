@@ -34,41 +34,9 @@ jobs:
         env:
           BOTKUBE_RELEASE_VERSION: "${{ inputs.version }}.0"
 
-      - name: Create a release branch
+      - name: install npm
         run: |
-          git checkout -b release/${{ inputs.version }}
-          git push --set-upstream origin release/${{ inputs.version }}
           npm install
-
-      - name: Update versions in installation docs
-        run: |
-          LATEST_RELEASE_VERSION="${{ inputs.version }}.0"
-          PREVIOUS_RELEASE_VERSION_WITH_PREFIX=$(grep  "\--version" docs/installation/slack/index.md | head -1 | awk -F'--version ' '{print $2}' | awk -F' ' '{print $1}')
-          PREVIOUS_RELEASE_VERSION=${PREVIOUS_RELEASE_VERSION_WITH_PREFIX:1}
-          find ./docs/installation/ -type f -name "*.md" -exec sed -i.bak "s/$PREVIOUS_RELEASE_VERSION/$LATEST_RELEASE_VERSION/g" {} \;
-          find ./docs/configuration/ -type f -name "*.md" -exec sed -i.bak "s/$PREVIOUS_RELEASE_VERSION/$LATEST_RELEASE_VERSION/g" {} \;
-          find ./docs/cli/ -type f -name "*.md" -exec sed -i.bak "s/$PREVIOUS_RELEASE_VERSION/$LATEST_RELEASE_VERSION/g" {} \;
-          find ./docs/cli/ -type f -name "*.mdx" -exec sed -i.bak "s/$PREVIOUS_RELEASE_VERSION/$LATEST_RELEASE_VERSION/g" {} \;
-
-      - name: Synchronize helm parameters
-        uses: magefile/mage-action@v2
-        with:
-          version: latest
-          args: "sync:chart"
-        env:
-          BOTKUBE_RELEASE_BRANCH: release-${{ inputs.version }}
-
-      - name: Synchronize CLI docs
-        uses: magefile/mage-action@v2
-        with:
-          version: latest
-          args: "sync:cli"
-        env:
-          BOTKUBE_RELEASE_BRANCH: release-${{ inputs.version }}
-
-      - name: Run docusaurus versioning
-        run: |
-          npm run docusaurus docs:version ${{ inputs.version }}
 
       - name: Prettier check
         run: |
