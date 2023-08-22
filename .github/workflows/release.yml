@@ -41,22 +41,11 @@ jobs:
       - name: Prettier check
         run: |
           npm run prettier:fix
-      
-      - name: Running misspell check
-        uses: reviewdog/action-misspell@v1
-        with: 
-          github_token:  ${{ secrets.GH_TOKEN }}
-          pattern: "**.md"
-          level: info
-          locale: "US"
-          exclude: |
-            ./.git/*
-            ./.cache/*
 
       - name: Run LanguageTool
         uses: reviewdog/action-languagetool@v1
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
+          # github_token: ${{ secrets.GH_TOKEN }}
           reporter: github-pr-review
           level: info
           patterns: "**.md"
@@ -69,7 +58,20 @@ jobs:
           enabled_categories: ''
           disabled_categories: 'TYPOS,TYPOGRAPHY,CASING'
           enabled_only: 'false'
+            
       
+      - name: Running misspell check
+        uses: reviewdog/action-misspell@v1
+        with: 
+          # github_token:  ${{ secrets.GH_TOKEN }}
+          pattern: "**.md"
+          level: info
+          locale: "US"
+          exclude: |
+            ./.git/*
+            ./.cache/*
+
+
 
       
           
