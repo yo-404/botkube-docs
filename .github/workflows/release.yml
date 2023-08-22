@@ -65,7 +65,7 @@ jobs:
         with: 
           # github_token:  ${{ secrets.GH_TOKEN }}
           pattern: "**.md"
-          level: info
+          level: error
           locale: "US"
           exclude: |
             ./.git/*
