@@ -8,19 +8,12 @@ on:
         description: Version of the next release
         required: true
 
-env:
-  git-user: github-actions[bot]
-  git-email: 41898282+github-actions[bot]@users.noreply.github.com
-
 jobs:
   release:
     name: Create release/${{ inputs.version }}
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -40,11 +33,6 @@ jobs:
           args: "sync:validateRelease"
         env:
           BOTKUBE_RELEASE_VERSION: "${{ inputs.version }}.0"
-
-      - name: Set git 'user.name' and 'user.email'
-        run: |
-          git config user.name "${{ env.git-user }}"
-          git config user.email ${{ env.git-email }}
 
       - name: Create a release branch
         run: |
@@ -92,14 +80,3 @@ jobs:
           git commit -m "Prepare docs for ${{ inputs.version }} release"
           git push
           git push origin release/${{ inputs.version }}
-
-      - name: Create a pull request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          gh pr create \
-            --title "Prepare docs for ${{ inputs.version }} release"  \
-             --head "release/${{ inputs.version }}" \
-             --base main \
-             --label release-automation \
-             --body "This Pull Request is created by release automation to prepare release for ${{ inputs.version }} documentation"
