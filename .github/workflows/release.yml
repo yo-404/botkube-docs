@@ -58,6 +58,9 @@ jobs:
           enabled_categories: ''
           disabled_categories: 'TYPOS,TYPOGRAPHY,CASING'
           enabled_only: 'false'
+          exclude: |
+            ./.git/*
+            ./.cache/*
             
       
       - name: Running misspell check
