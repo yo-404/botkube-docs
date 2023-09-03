@@ -56,10 +56,10 @@ jobs:
       - name: Run LanguageTool
         uses: reviewdog/action-languagetool@v1
         with:
-          # github_token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN }}
           reporter: github-pr-review
-          level: info
-          patterns: "**.md"
+          level: error
+          patterns: "**/*.md **/*.txt"
           custom_api_endpoint: ''
           ### Flags for LanguageTool ###
           # Ref: https://languagetool.org/http-api/swagger-ui/#!/default/post_check
@@ -69,8 +69,6 @@ jobs:
           enabled_categories: ''
           disabled_categories: 'TYPOS,TYPOGRAPHY,CASING'
           enabled_only: 'false'
-            
-      
 
 
 
