@@ -8,19 +8,12 @@ on:
         description: Version of the next release
         required: true
 
-env:
-  git-user: github-actions[bot]
-  git-email: 41898282+github-actions[bot]@users.noreply.github.com
-
 jobs:
   release:
     name: Create release/${{ inputs.version }}
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -41,65 +34,46 @@ jobs:
         env:
           BOTKUBE_RELEASE_VERSION: "${{ inputs.version }}.0"
 
-      - name: Set git 'user.name' and 'user.email'
+      - name: install npm
         run: |
-          git config user.name "${{ env.git-user }}"
-          git config user.email ${{ env.git-email }}
-
-      - name: Create a release branch
-        run: |
-          git checkout -b release/${{ inputs.version }}
-          git push --set-upstream origin release/${{ inputs.version }}
           npm install
-
-      - name: Update versions in installation docs
-        run: |
-          LATEST_RELEASE_VERSION="${{ inputs.version }}.0"
-          PREVIOUS_RELEASE_VERSION_WITH_PREFIX=$(grep  "\--version" docs/installation/slack/socket-slack/self-hosted.md | head -1 | awk -F'--version ' '{print $2}' | awk -F' ' '{print $1}')
-          PREVIOUS_RELEASE_VERSION=${PREVIOUS_RELEASE_VERSION_WITH_PREFIX:1}
-          find ./docs/installation/ -type f -name "*.md" -exec sed -i.bak "s/$PREVIOUS_RELEASE_VERSION/$LATEST_RELEASE_VERSION/g" {} \;
-          find ./docs/configuration/ -type f -name "*.md" -exec sed -i.bak "s/$PREVIOUS_RELEASE_VERSION/$LATEST_RELEASE_VERSION/g" {} \;
-          find ./docs/cli/ -type f -name "*.md" -exec sed -i.bak "s/$PREVIOUS_RELEASE_VERSION/$LATEST_RELEASE_VERSION/g" {} \;
-          find ./docs/cli/ -type f -name "*.mdx" -exec sed -i.bak "s/$PREVIOUS_RELEASE_VERSION/$LATEST_RELEASE_VERSION/g" {} \;
-
-      - name: Synchronize helm parameters
-        uses: magefile/mage-action@v2
-        with:
-          version: latest
-          args: "sync:chart"
-        env:
-          BOTKUBE_RELEASE_BRANCH: release-${{ inputs.version }}
-
-      - name: Synchronize CLI docs
-        uses: magefile/mage-action@v2
-        with:
-          version: latest
-          args: "sync:cli"
-        env:
-          BOTKUBE_RELEASE_BRANCH: release-${{ inputs.version }}
-
-      - name: Run docusaurus versioning
-        run: |
-          npm run docusaurus docs:version ${{ inputs.version }}
 
       - name: Prettier check
         run: |
           npm run prettier:fix
 
-      - name: Push changes to remote
-        run: |
-          git add .
-          git commit -m "Prepare docs for ${{ inputs.version }} release"
-          git push
-          git push origin release/${{ inputs.version }}
+      - name: Running misspell check
+        uses: reviewdog/action-misspell@v1
+        with: 
+          # github_token:  ${{ secrets.GH_TOKEN }}
+          pattern: "**.md"
+          level: error
+          locale: "US"
+          exclude: |
+            ./.git/*
+            ./.cache/*
 
-      - name: Create a pull request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          gh pr create \
-            --title "Prepare docs for ${{ inputs.version }} release"  \
-             --head "release/${{ inputs.version }}" \
-             --base main \
-             --label release-automation \
-             --body "This Pull Request is created by release automation to prepare release for ${{ inputs.version }} documentation"
+      - name: Run LanguageTool
+        uses: reviewdog/action-languagetool@v1
+        with:
+          # github_token: ${{ secrets.GH_TOKEN }}
+          reporter: github-pr-review
+          level: info
+          patterns: "**.md"
+          custom_api_endpoint: ''
+          ### Flags for LanguageTool ###
+          # Ref: https://languagetool.org/http-api/swagger-ui/#!/default/post_check
+          language: 'en-US'
+          enabled_rules: ''
+          disabled_rules: 'WHITESPACE_RULE,EN_QUOTES,DASH_RULE,WORD_CONTAINS_UNDERSCORE,UPPERCASE_SENTENCE_START,ARROWS,COMMA_PARENTHESIS_WHITESPACE,UNLIKELY_OPENING_PUNCTUATION,SENTENCE_WHITESPACE,CURRENCY,EN_UNPAIRED_BRACKETS,PHRASE_REPETITION,PUNCTUATION_PARAGRAPH_END,METRIC_UNITS_EN_US,ENGLISH_WORD_REPEAT_BEGINNING_RULE,DOUBLE_PUNCTUATION'
+          enabled_categories: ''
+          disabled_categories: 'TYPOS,TYPOGRAPHY,CASING'
+          enabled_only: 'false'
+            
+      
+
+
+
+
+      
+          
